@@ -188,8 +188,9 @@ Referencia: 80 o más puntos, avanza; 65 a 79, entrevista de desempate; menos de
 
 | Archivo | Para quién |
 |---|---|
-| `caso_rgm_participante.pdf` + `datos/caso_rgm_datos.xlsx` | Participante |
-| `guia_evaluador.pdf` | Evaluador |
+| `participante/caso_completo.pdf` + `participante/caso_rgm_datos.xlsx` | Participante, versión de 3 horas |
+| `participante/caso_corto.pdf` + el mismo Excel | Participante, versión de 90 minutos (tareas 2 a 5 = P1, P2, P3, P7) |
+| `evaluador/guia_evaluador.pdf` | Evaluador |
 | `evaluador/datos_limpios.xlsx` | Evaluador: data sin errores para comparar |
 | `evaluador/respuestas.json` | Evaluador: todas las cifras de esta guía |
 | `generador/generar_datos.py` | Regenerar data (`python3 generador/generar_datos.py`); cambiar la semilla crea una versión nueva del caso con las mismas trampas |

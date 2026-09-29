@@ -1,7 +1,7 @@
 """Genera los datos del caso RGM (ventas semanales de una cadena ficticia).
 
 Salidas:
-  datos/caso_rgm_datos.xlsx          -> lo que recibe el participante (data sucia)
+  participante/caso_rgm_datos.xlsx          -> lo que recibe el participante (data sucia)
   evaluador/datos_limpios.xlsx       -> la verdad sin errores (solo evaluador)
   evaluador/respuestas.json          -> cifras de referencia para la guía
 
@@ -354,9 +354,9 @@ def answers(clean):
 if __name__ == "__main__":
     clean = generate_clean()
     dirty_rows, log = dirty(clean)
-    (ROOT / "datos").mkdir(exist_ok=True)
+    (ROOT / "participante").mkdir(exist_ok=True)
     (ROOT / "evaluador").mkdir(exist_ok=True)
-    write_participant(dirty_rows, ROOT / "datos" / "caso_rgm_datos.xlsx")
+    write_participant(dirty_rows, ROOT / "participante" / "caso_rgm_datos.xlsx")
     write_clean(clean, ROOT / "evaluador" / "datos_limpios.xlsx")
     res = {"errores_inyectados": log, **answers(clean)}
     (ROOT / "evaluador" / "respuestas.json").write_text(json.dumps(res, ensure_ascii=False, indent=2, default=str))
