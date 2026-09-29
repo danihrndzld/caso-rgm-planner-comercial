@@ -1,16 +1,18 @@
 # Caso RGM — Planner Comercial
 
-Caso de Excel para candidatos a Planner Comercial en consumo masivo. El candidato limpia 978 filas de venta semanal con errores sembrados, calcula elasticidades y evalúa promociones y alzas de precio de una cadena ficticia (13 SKUs, 3 formatos, 26 semanas de 2026).
+Caso de Excel para candidatos a Planner Comercial en consumo masivo. El candidato limpia 978 filas de venta semanal con errores sembrados, calcula elasticidades y evalúa promociones y alzas de precio de una cadena ficticia (13 SKUs, 3 formatos, 26 semanas de 2026). Luego responde 18 preguntas teóricas de SQL, BigQuery, data warehouse, bases de datos y Excel.
+
+Los casos traen solo contexto y preguntas, sin pistas: la data, los supuestos y lo que falta los descubre el candidato. Lo que se espera de cada respuesta está en la guía del evaluador.
 
 ## Archivos
 
 | Archivo | Para quién |
 |---|---|
-| `participante/caso_completo.pdf` | Candidato, versión completa (3 horas, 7 preguntas) |
-| `participante/caso_corto.pdf` | Candidato, versión corta (90 minutos, 5 tareas) |
+| `participante/caso_completo.pdf` | Candidato, versión completa: contexto, 7 preguntas (3 horas) y preguntas teóricas (40 min) |
+| `participante/caso_corto.pdf` | Candidato, versión corta: contexto, 4 preguntas (90 min) y preguntas teóricas (40 min) |
 | `participante/preguntas_teoricas.md` | Candidato: 18 preguntas de SQL, BigQuery, data warehouse, bases de datos y Excel; van al final de ambos PDFs |
 | `participante/caso_rgm_datos.xlsx` | Candidato: la data sucia, igual para ambas versiones |
-| `evaluador/guia_evaluador.pdf` | Evaluador: 14 errores sembrados, respuestas con cifras, rúbrica |
+| `evaluador/guia_evaluador.pdf` | Evaluador: 14 errores sembrados, respuestas del caso y de las 18 preguntas teóricas, rúbrica |
 | `evaluador/datos_limpios.xlsx`, `evaluador/respuestas.json` | Evaluador: data sin errores y cifras de referencia |
 | `generador/generar_datos.py` | Regenera los datos |
 
