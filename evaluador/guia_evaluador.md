@@ -14,7 +14,7 @@ Las instrucciones son cortas a propósito. Un participante promedio las sigue y 
 
 | Pregunta | Habilidad que mide | Trampa sembrada |
 |---|---|---|
-| Parte 1 | Limpieza, trazabilidad | 10 duplicados solo aparecen tras estandarizar texto |
+| Limpieza | Limpieza, trazabilidad | 10 duplicados solo aparecen tras estandarizar texto |
 | P1 | Tablas dinámicas, normalización | Venta total por formato sin dividir entre tiendas |
 | P2 | Elasticidad, lectura del calendario | Semana 13 es Semana Santa |
 | P3 | Evaluación de promociones | Venta sube, margen cae a ₡0 por unidad |
@@ -141,7 +141,7 @@ Respuestas fuertes, con impacto de referencia:
 
 1. **No repetir la promo de detergente a ₡1.750** sin fondos del proveedor. Evita perder ₡7,3 M por evento. Alternativa: 15 % de descuento o mecánica 2 × ₡4.500.
 2. **Revisar precio de otros SKUs inelásticos**, empezando por el resto de Aceites. Aceite Girasol Dorado muestra elasticidad −0,24.
-3. **Corregir la arquitectura de Cola Tropical.** El 3L cuesta ₡783 por litro y el 2L ₡725: el empaque grande sale más caro por litro. Bajar el 3L a ₡2.050 (₡683/L) alinea la escalera de precios. Nadie pregunta por esto; aparece si el participante calcula el precio por unidad de medida que pide la Parte 2.
+3. **Corregir la arquitectura de Cola Tropical.** El 3L cuesta ₡783 por litro y el 2L ₡725: el empaque grande sale más caro por litro. Bajar el 3L a ₡2.050 (₡683/L) alinea la escalera de precios. Nadie pregunta por esto; aparece solo si el participante calcula el precio por litro por iniciativa propia.
 4. **Promociones de gaseosa solo en Bodega**, donde la elasticidad es mayor (−4,1), o con un descuento menor.
 5. **Evitar quiebres de marca propia.** Precio Justo Aceite en Súper no vendió 3 semanas: ₡1,47 M de venta y ₡0,41 M de margen perdidos (parte lo recuperó Palma Rica, que subió 20 % en Súper esas semanas).
 6. **Dar de alta GAS-004 en el maestro** con su costo antes de medir su lanzamiento.
@@ -189,8 +189,99 @@ Referencia: 80 o más puntos, avanza; 65 a 79, entrevista de desempate; menos de
 | Archivo | Para quién |
 |---|---|
 | `participante/caso_completo.pdf` + `participante/caso_rgm_datos.xlsx` | Participante, versión de 3 horas |
-| `participante/caso_corto.pdf` + el mismo Excel | Participante, versión de 90 minutos (tareas 2 a 5 = P1, P2, P3, P7) |
+| `participante/caso_corto.pdf` + el mismo Excel | Participante, versión de 90 minutos (preguntas 1 a 4 = P1, P2, P3, P7) |
 | `evaluador/guia_evaluador.pdf` | Evaluador |
 | `evaluador/datos_limpios.xlsx` | Evaluador: data sin errores para comparar |
 | `evaluador/respuestas.json` | Evaluador: todas las cifras de esta guía |
 | `generador/generar_datos.py` | Regenerar data (`python3 generador/generar_datos.py`); cambiar la semilla crea una versión nueva del caso con las mismas trampas |
+
+# 7. Respuestas de las preguntas teóricas
+
+Las preguntas están en `participante/preguntas_teoricas.md` y se incluyen al final de los dos PDFs del caso. Cada pregunta vale 0, 1 o 2 puntos (total 36). Referencia: 24 o más puntos, dominio teórico suficiente para la plaza. Se reporta aparte del puntaje del caso.
+
+| Puntos | Criterio |
+|---|---|
+| 2 | Correcta y aplicada a los datos del caso |
+| 1 | Idea correcta, incompleta o con un error de lógica |
+| 0 | Incorrecta o en blanco |
+
+## A. SQL
+
+**1.**
+```sql
+SELECT p.categoria,
+       SUM(v.venta) AS venta,
+       SUM(v.venta - v.unidades * p.costo_unitario) AS margen
+FROM istmo.comercial.ventas v
+JOIN istmo.comercial.productos p ON v.sku = p.sku
+GROUP BY p.categoria
+ORDER BY venta DESC;
+```
+Para 2 puntos basta la consulta. Si además nota que el `JOIN` descarta GAS-004, anótalo como señal a favor.
+
+**2.** `WHERE` filtra filas antes de agrupar; `HAVING` filtra grupos después de agregar. Se agrega `HAVING SUM(v.venta) > 250000000` antes del `ORDER BY`. Con los datos del caso solo queda Detergentes (₡261,6 M). Gaseosas suma ₡245,8 M con `JOIN`, porque pierde los ₡4,18 M de GAS-004.
+
+**3.** Con `JOIN`, GAS-004 desaparece y la venta de Gaseosas baja ₡4,18 M sin aviso. Con `LEFT JOIN`, la venta aparece con categoría `NULL` y su margen queda `NULL`, porque `SUM` ignora nulos.
+```sql
+SELECT DISTINCT v.sku
+FROM istmo.comercial.ventas v
+LEFT JOIN istmo.comercial.productos p ON v.sku = p.sku
+WHERE p.sku IS NULL;
+```
+
+**4.**
+```sql
+SELECT fecha, formato, sku, COUNT(*) AS n
+FROM istmo.comercial.ventas
+GROUP BY fecha, formato, sku
+HAVING COUNT(*) > 1;
+```
+Para conservar una fila: `QUALIFY ROW_NUMBER() OVER (PARTITION BY fecha, formato, sku ORDER BY venta DESC) = 1`, o `SELECT DISTINCT` si las filas son idénticas. Para 2 puntos debe advertir que en el caso las devoluciones comparten esa llave: deduplicar solo por `fecha, formato, sku` borra devoluciones o ventas reales.
+
+**5.**
+```sql
+WITH s AS (
+  SELECT sku, fecha, SUM(unidades) AS u
+  FROM istmo.comercial.ventas
+  GROUP BY sku, fecha
+)
+SELECT sku, fecha, u,
+       SAFE_DIVIDE(u - LAG(u) OVER w, LAG(u) OVER w) AS variacion
+FROM s
+WINDOW w AS (PARTITION BY sku ORDER BY fecha);
+```
+Se acepta un auto-join con `fecha = DATE_SUB(fecha, INTERVAL 7 DAY)` por 2 puntos.
+
+## B. BigQuery
+
+**6.** El costo depende de los bytes leídos. BigQuery guarda por columna, así que lee solo las columnas que nombra la consulta. `SELECT *` lee todas. `LIMIT` recorta el resultado después de leer la tabla completa, así que no reduce bytes. Se abarata nombrando columnas, filtrando por la columna de partición y revisando el estimado de bytes antes de correr la consulta.
+
+**7.** Partición por `fecha` (diaria o mensual); clustering por `sku` y `formato` o `tienda`. Una consulta típica ("venta de Café en Bodega en las últimas 8 semanas") lee solo 8 semanas de particiones y, dentro, solo los bloques de esos SKUs.
+
+**8.** BigQuery es un warehouse analítico: columnar, sin servidor que administrar, pensado para agregar millones de filas. MySQL y SQL Server son transaccionales: guardan por fila, usan índices y resuelven muchas lecturas y escrituras pequeñas. Uso: BigQuery para el tablero semanal de categorías; MySQL para registrar cada venta de caja o el inventario en línea.
+
+## C. Data warehouse y modelado
+
+**9.** OLTP registra transacciones una a una (caja, inventario) y prioriza escrituras rápidas y consistentes. OLAP guarda historia integrada de varias fuentes y prioriza consultas agregadas. Analizar sobre la caja pone carga sobre un sistema que atiende clientes, no guarda años de historia y no trae datos de otras fuentes (costos, promociones).
+
+**10.** Hechos: `ventas` (unidades, venta). Dimensiones: `productos`, `tiendas` o formato, y fecha. La dimensión que falta es un **calendario** con feriados y temporadas: con él, Semana Santa aparece sola en la semana 13. También sirve una dimensión de **promociones** con mecánica y aporte del proveedor.
+
+**11.** No se puede responder: venta por tienda, venta por día o día de la semana, tamaño o composición de la canasta, si la promo trajo clientes nuevos. ETL transforma antes de cargar al warehouse; ELT carga la data cruda y la transforma dentro del warehouse con SQL, el patrón habitual en BigQuery.
+
+## D. Bases de datos
+
+**12.** Llave primaria compuesta: `(fecha, formato, sku)`, más un tipo de movimiento si las devoluciones se guardan en la misma tabla. Llave foránea: `ventas.sku` → `productos.sku`. Habrían evitado los duplicados y la venta de GAS-004 sin maestro. Una llave foránea de `formato` hacia `tiendas` también habría evitado las 45 variantes de escritura del formato.
+
+**13.** Es falta de normalización: un dato que depende del SKU se repite en cada fila de venta. Por eso aparecen 60 variantes (`Cafe`, `GASEOSAS `). Se corrige guardando la categoría solo en `productos` y trayéndola con un `JOIN` o un `BUSCARX`.
+
+## E. Excel
+
+**14.** Limitaciones de `BUSCARV`: solo busca en la primera columna y devuelve hacia la derecha; el número de columna es fijo y se rompe al insertar columnas; sin el cuarto argumento en `FALSO` hace coincidencia aproximada y devuelve un valor equivocado sin error. `BUSCARX` busca en cualquier dirección, usa coincidencia exacta por defecto y acepta un valor para "no encontrado".
+
+**15.** "Quitar duplicados" compara texto exacto: `HIPER` y `Hiper`, o `Cola Tropical 2L` con espacio final, cuentan como distintos. Antes se estandariza con `ESPACIOS`, `NOMPROPIO` o `MAYUSC`, `SUSTITUIR` (quitar `₡`), `VALOR` o `NUMEROVALOR` y `FECHANUMERO`, o se reemplaza el texto por el del maestro. Luego se quitan duplicados sobre las columnas llave.
+
+**16.** `=SUMAR.SI.CONJUNTO(Ventas_Limpias[Venta]; Ventas_Limpias[Categoria]; "Gaseosas"; Ventas_Limpias[Formato]; "Bodega"; Ventas_Limpias[Semana]; 20)`. Se acepta con rangos de celdas o con `SUMAPRODUCTO`.
+
+**17.** El promedio de porcentajes da el mismo peso a cada fila sin importar su venta. Ejemplo: una fila de ₡100 con 50 % de margen y otra de ₡10.000 con 10 % promedian 30 %, pero el margen real es ₡1.050 ÷ ₡10.100 = 10,4 %. Se calcula sumando margen y venta y dividiendo: campo calculado `Margen / Venta` en la tabla dinámica o una medida en Power Pivot.
+
+**18.** Power Query: cada paso de limpieza queda grabado y se repite con "Actualizar" al reemplazar el archivo. También vale una consulta SQL programada en BigQuery o un flujo en Alteryx. Para 2 puntos debe incluir un control de calidad: conteo de filas, SKUs sin maestro o Venta ≠ Unidades × Precio.
