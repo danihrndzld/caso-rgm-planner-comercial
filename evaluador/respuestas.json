@@ -1,0 +1,165 @@
+{
+  "errores_inyectados": {
+    "unidades_x10": [
+      [
+        "CAF-003",
+        "Hiper",
+        "2026-03-02"
+      ],
+      [
+        "ACE-001",
+        "Bodega",
+        "2026-05-11"
+      ],
+      [
+        "GAS-003",
+        "Bodega",
+        "2026-05-04"
+      ]
+    ],
+    "precio_vacio": 12,
+    "precio_texto": 25,
+    "variantes_texto": "60 categoría, 45 formato, 40 descripción",
+    "fechas_texto": 40,
+    "promo_mal_marcada": {
+      "GAS-001 sem 20 Bodega sin bandera": 1,
+      "bandera Sí sin descuento": [
+        [
+          "ACE-002",
+          "2026-02-23"
+        ],
+        [
+          "ACE-002",
+          "2026-03-23"
+        ],
+        [
+          "GAS-001",
+          "2026-01-26"
+        ],
+        [
+          "GAS-002",
+          "2026-04-13"
+        ]
+      ]
+    },
+    "devoluciones": 6,
+    "duplicados_exactos": 14,
+    "duplicados_tras_estandarizar": 10,
+    "filas_entregadas": 978,
+    "filas_limpias": 948
+  },
+  "categoria": {
+    "Gaseosas": {
+      "unidades": 172498,
+      "venta": 249948120,
+      "margen": 85961370,
+      "margen_pct": 34.4
+    },
+    "Café": {
+      "unidades": 80420,
+      "venta": 231993090,
+      "margen": 84113840,
+      "margen_pct": 36.3
+    },
+    "Aceites": {
+      "unidades": 118746,
+      "venta": 231410800,
+      "margen": 74271750,
+      "margen_pct": 32.1
+    },
+    "Detergentes": {
+      "unidades": 126887,
+      "venta": 261619360,
+      "margen": 74558810,
+      "margen_pct": 28.5
+    }
+  },
+  "formato": {
+    "Hiper": {
+      "venta": 202881600,
+      "venta_por_tienda_semana": 975392,
+      "margen_pct": 33.0,
+      "share_marca_propia_pct": 11.9
+    },
+    "Súper": {
+      "venta": 295729350,
+      "venta_por_tienda_semana": 454968,
+      "margen_pct": 33.0,
+      "share_marca_propia_pct": 18.7
+    },
+    "Bodega": {
+      "venta": 476360420,
+      "venta_por_tienda_semana": 305359,
+      "margen_pct": 32.4,
+      "share_marca_propia_pct": 35.6
+    }
+  },
+  "elasticidad_GAS001": {
+    "semana20_vs_base": -3.77,
+    "semana13_vs_base_sin_ajustar": -6.35,
+    "log_semana20": -2.31,
+    "log_semana13": -3.32,
+    "lift_unidades_sem20_pct": 93.6,
+    "lift_unidades_sem13_pct": 157.6
+  },
+  "elasticidad_GAS001_por_formato": {
+    "Hiper": -3.08,
+    "Súper": -3.91,
+    "Bodega": -4.12
+  },
+  "promo_DET001": {
+    "elasticidad": -3.06,
+    "elasticidad_log": -1.83,
+    "lift_unidades_pct": 91.8,
+    "venta_incremental_4sem": 6068500,
+    "margen_incremental_DET001_4sem": -5310000,
+    "margen_perdido_post_promo_sem20_21": -423750,
+    "margen_perdido_canibalizacion": -1564513,
+    "margen_neto_categoria": -7298263,
+    "margen_unitario_promo": 0
+  },
+  "promo_GAS001_sem20": {
+    "margen_incremental_GAS001": -773730,
+    "margen_perdido_post_promo_sem21": -329750,
+    "margen_perdido_canibalizacion": -446292,
+    "margen_neto_categoria": -1549772,
+    "venta_incremental": 2231595
+  },
+  "alza_ACE-001": {
+    "precio_pct": 10.0,
+    "unidades_pct": -2.4,
+    "venta_semanal_pct": 7.4,
+    "margen_semanal_pct": 28.3,
+    "elasticidad": -0.24
+  },
+  "alza_CAF-001": {
+    "precio_pct": 8.2,
+    "unidades_pct": -9.2,
+    "venta_semanal_pct": -1.8,
+    "margen_semanal_pct": 12.7,
+    "elasticidad": -1.13
+  },
+  "cafe_migracion": {
+    "CAF-002": 7.0,
+    "CAF-003": 8.7
+  },
+  "quiebre_ACE003_super": {
+    "semanas": [
+      18,
+      19,
+      20
+    ],
+    "unidades_semana_base": 309,
+    "venta_perdida_estimada": 1472340,
+    "margen_perdido_estimado": 407440
+  },
+  "precio_por_litro": {
+    "Cola Tropical 2L": 725.0,
+    "Cola Tropical 3L": 783.3,
+    "Precio Justo Cola 2L": 525.0
+  },
+  "GAS004": {
+    "venta": 4184700,
+    "unidades": 2886
+  }
+}
